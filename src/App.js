@@ -1,34 +1,48 @@
+import React from "react";
+import axios from 'axios';
+import Movie from './Movie.js'
 
 
-function Food({name, picture}){
- 
-  return (<div>
-    <h3>Я хочу кушать {name}</h3>
-    <img src={picture}></img>
-   
-    </div>
-  )
+class App extends React.Component {
+
+state = {
+  isLoading: true,
+  movies:[],
+
 };
 
-const foodILike = [
-  {
-    'name': 'борщ',
-    'image': 'https://proprikol.ru/wp-content/uploads/2020/04/kartinki-borshh-55.jpg'
-  },
-  {
-    'name': 'квас',
-    'image':'https://attuale.ru/wp-content/uploads/2018/11/Kvas-7.jpg' 
-  }
-];
+getMovies = async () =>{
+  const {data:{data:{movies}}} =  await axios.get('https://yts.mx/api/v2/list_movies.jsonp?sort_by=rating');
+  this.setState({ movies, isLoading: false})
+}
 
-function App() {
+componentDidMount(){
+ this.getMovies();
+}
+
+
+
+
+render(){
+ const {isLoading, movies } = this.state;
   return (
     <div>
-      
-      {foodILike.map(dish => <Food name = {dish.name} pictures = {dish.pictures}/>)}
-    </div>
-    
+      {isLoading 
+      ? 'Страница загружается' 
+      : movies.map((movie) => {
+      console.log(movie);
+      return (
+      <Movie 
+        id={movie.id} 
+        year={movie.year} 
+        summary={movie.summary} 
+        poster={movie.medium_cover_image}
+        />
   );
+})}
+ </div>
+  );
+}
 }
 
 export default App;
